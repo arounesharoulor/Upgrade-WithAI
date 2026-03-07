@@ -1,4 +1,6 @@
 
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import Section from './Section';
 import SectionHeader from './SectionHeader';
 
@@ -49,20 +51,35 @@ const benefits = [
 
 export default function WhyUs() {
   return (
-    <Section id="why-us" className="bg-gradient-to-b from-[#0f172a] to-[#0a0e17] text-center text-stone-200">
-      <div className="mb-8">
-        <SectionHeader
-          eyebrow="Why UpgradeWithAIFolks"
-          eyebrowClass="text-stone-400"
-          title="What Sets Us Apart"
-          
-          highlightClass="text-cyan-300"
-          subtitle="Interactive flip cards reveal the full story. Move your cursor to turn each benefit over."
-          subtitleClass="text-gray-400"
-        />
-      </div>
+    <Section id="why-us" className="bg-gradient-to-br from-slate-900 via-purple-900/10 to-violet-900/20 relative overflow-hidden text-center text-white">
+      {/* background gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-purple-900/10 to-violet-900/20" />
+      <div className="relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="mb-8"
+        >
+          <SectionHeader
+            eyebrow="Why UpgradeWithAIFolks"
+            eyebrowClass="text-slate-300"
+            title="What Sets Us Apart"
 
-      <div className="grid md:grid-cols-3 gap-10">
+            highlightClass="text-purple-300"
+            subtitle="Interactive flip cards reveal the full story. Move your cursor to turn each benefit over."
+            subtitleClass="text-slate-300"
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-100px" }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="grid md:grid-cols-3 gap-10"
+        >
         {benefits.map((b, i) => (
           <div
             key={i}
@@ -75,7 +92,7 @@ export default function WhyUs() {
               style={{ backfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}
             >
               <div className="text-3xl mb-4">{b.icon}</div>
-              <h3 className="text-xl font-bold text-white text-center">{b.title}</h3>
+              <h3 className="text-xl font-semibold text-white text-center">{b.title}</h3>
             </div>
             {/* back */}
             <div
@@ -83,7 +100,7 @@ export default function WhyUs() {
               style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
             >
               <div>
-                <h4 className="text-lg font-semibold text-cyan-300 mb-2">{b.tagline}</h4>
+                <h4 className="text-lg font-medium text-cyan-300 mb-2">{b.tagline}</h4>
                 <p className="text-stone-200 text-sm leading-relaxed">{b.desc}</p>
               </div>
               <div className="mt-4">
@@ -111,6 +128,7 @@ export default function WhyUs() {
             />
           </div>
         ))}
+        </motion.div>
       </div>
 
     </Section>

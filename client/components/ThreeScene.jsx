@@ -1,36 +1,43 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 
-function RotatingMesh() {
-  const mesh = useRef();
+function RotatingCube() {
+  const meshRef = useRef();
 
-  // rotate the mesh a little on each frame
   useFrame(() => {
-    if (mesh.current) {
-      mesh.current.rotation.y += 0.01;
-      mesh.current.rotation.x += 0.005;
-      mesh.current.rotation.z += 0.002;
+    if (meshRef.current) {
+      meshRef.current.rotation.x += 0.005;
+      meshRef.current.rotation.y += 0.008;
     }
   });
 
   return (
-    <mesh ref={mesh} scale={[3, 3, 3]} position={[0, 0, 0]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshPhongMaterial color="#00ff88" emissive="#00ff88" emissiveIntensity={0.8} side={2} />
+    <mesh ref={meshRef}>
+      <boxGeometry args={[2, 2, 2]} />
+      <meshPhongMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={1} />
+    </mesh>
+  );
+}
+
+function FloatingBox() {
+  const meshRef = useRef();
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.z -= 0.003;
+      meshRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.5;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} position={[3, 0, 0]} scale={0.8}>
+      <boxGeometry args={[1.5, 1.5, 1.5]} />
+      <meshPhongMaterial color="#0088ff" wireframe />
     </mesh>
   );
 }
 
 export default function ThreeScene() {
-  useEffect(() => {
-    const handleResize = () => {
-      // Handle resize if needed
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   return (
     <Canvas
       style={{
@@ -39,16 +46,18 @@ export default function ThreeScene() {
         left: 0,
         width: '100%',
         height: '100%',
-        zIndex: -10,
+        zIndex: -1,
         pointerEvents: 'none'
       }}
-      camera={{ position: [0, 0, 4], fov: 75 }}
+      camera={{ position: [0, 0, 5], fov: 75 }}
       gl={{ antialias: true, alpha: true }}
     >
-      <ambientLight intensity={0.8} />
-      <pointLight position={[5, 5, 5]} intensity={1.2} />
-      <pointLight position={[-5, -5, 5]} intensity={0.8} color="#0088ff" />
-      <RotatingMesh />
+      <ambientLight intensity={0.7} />
+      <pointLight position={[5, 5, 5]} intensity={1} color="#00ff88" />
+      <pointLight position={[-5, -5, 5]} intensity={1} color="#0088ff" />
+      <RotatingCube />
+      <FloatingBox />
     </Canvas>
   );
 }
+

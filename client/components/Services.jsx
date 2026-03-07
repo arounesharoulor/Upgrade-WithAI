@@ -1,122 +1,74 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
-import { MdWeb, MdCode, MdSmartToy } from 'react-icons/md';
+// src/components/Services.jsx
+import { motion as Motion } from 'framer-motion';
 import Section from './Section';
 import SectionHeader from './SectionHeader';
-import InfoCard from './InfoCard';
 
 const services = [
   {
-    title: "Static Websites",
-    icon: MdWeb,
-    description: "Beautiful, blazing-fast websites that establish your online presence. Perfect for businesses, portfolios, and personal brands.",
-    features: [
-      "Mobile Responsive",
-      "SEO Optimized",
-      "Lightning Fast",
-      "Up to 5–8 Pages",
-      "Custom Design",
-      "WhatsApp Integration"
-    ]
+    icon: '🌐',
+    title: 'Web Development',
+    description: 'Modern, responsive websites and web applications built with cutting-edge technologies.'
   },
   {
-    title: "Web Applications",
-    icon: MdCode,
-    description: "Powerful, interactive applications with admin dashboards, real-time data, and seamless user experiences.",
-    features: [
-      "Custom CMS",
-      "API Integration",
-      "Database Driven",
-      "User Authentication",
-      "Admin Dashboard",
-      "Real-time Features"
-    ]
+    icon: '📱',
+    title: 'Mobile Apps',
+    description: 'Native and cross-platform mobile applications for iOS and Android.'
   },
   {
-    title: "AI-Powered Solutions",
-    icon: MdSmartToy,
-    description: "Cutting-edge applications powered by AI — chatbots, intelligent automation, predictive analytics, and data-driven decision making.",
-    features: [
-      "AI Integration",
-      "Smart Automation",
-      "Chatbots & Assistants",
-      "Predictive Analytics",
-      "Natural Language Processing",
-      "Custom AI Workflows"
-    ]
+    icon: '🤖',
+    title: 'AI Integration',
+    description: 'Leverage artificial intelligence to enhance user experiences and automate processes.'
+  },
+  {
+    icon: '☁️',
+    title: 'Cloud Solutions',
+    description: 'Scalable cloud infrastructure and deployment solutions for modern businesses.'
+  },
+  {
+    icon: '🔧',
+    title: 'Custom Development',
+    description: 'Tailored software solutions designed to meet your specific business requirements.'
+  },
+  {
+    icon: '📊',
+    title: 'Data Analytics',
+    description: 'Transform your data into actionable insights with advanced analytics and reporting.'
   }
 ];
 
 export default function Services() {
-  const [active, setActive] = useState(0);
-
-  // auto rotate tabs every 5 seconds
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setActive(prev => (prev + 1) % services.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <Section id="services" className="bg-[#0a0e1f] py-24 md:py-32 text-cyan-200">
-      <div className="text-center mb-16 md:mb-24">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-4">
-          <SectionHeader
-            eyebrow="What We Build"
-            eyebrowClass="text-cyan-400"
-            title="Explore Our Services"
-            
-            highlightClass="text-emerald-400"
-            subtitle="Select a card to see more details and features for each offering."
-            subtitleClass="text-gray-200"
-          />
-        </motion.div>
+    <Section id="services" className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-emerald-900/10 to-green-900/20 py-24 md:py-32 text-white">
+      {/* background gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-emerald-900/10 to-green-900/20" />
+
+      <div className="relative z-10 max-w-7xl mx-auto text-center">
+        <SectionHeader
+          eyebrow="Our Services"
+          eyebrowClass="text-slate-300"
+          title="What We Offer"
+          highlightClass="text-emerald-300"
+          subtitle="Comprehensive digital solutions to help your business grow and succeed in the modern world."
+          subtitleClass="text-slate-300"
+        />
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+          {services.map((service, i) => (
+            <Motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ delay: i * 0.1, duration: 0.8 }}
+              className="bg-gradient-to-br from-gray-900/40 to-gray-950/40 border border-gray-800 rounded-2xl p-8 hover:border-cyan-500/50 transition-all duration-300 hover:scale-105"
+            >
+              <div className="text-4xl mb-4">{service.icon}</div>
+              <h3 className="text-xl font-semibold mb-4 text-emerald-300">{service.title}</h3>
+              <p className="text-gray-300 leading-relaxed">{service.description}</p>
+            </Motion.div>
+          ))}
+        </div>
       </div>
-
-      {/* tabs */}
-      <div className="flex justify-center gap-4 mb-12">
-        {services.map((svc, idx) => (
-          <button
-            key={idx}
-            onClick={() => setActive(idx)}
-            className={`px-6 py-3 rounded-full font-semibold transition-colors duration-200 focus:outline-none ${
-              active === idx
-                ? 'bg-emerald-500 text-black'
-                : 'bg-gray-800 text-cyan-200 hover:bg-gray-700'
-            }`}
-          >
-            {svc.title}
-          </button>
-        ))}
-      </div>
-
-      {/* active service details */}
-      <motion.div
-        key={active}
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-3xl mx-auto text-center"
-      >
-        <InfoCard
-          icon={React.createElement(services[active].icon, { size: 48 })}
-          title={services[active].title}
-        >
-          <p className="text-cyan-100 mb-6 leading-relaxed">
-            {services[active].description}
-          </p>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-left text-gray-200">
-            {services[active].features.map((f) => (
-              <li key={f} className="flex items-start gap-2">
-                <span className="text-emerald-400">•</span>
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
-        </InfoCard>
-      </motion.div>
-
     </Section>
   );
 }
