@@ -1,41 +1,37 @@
-// src/App.jsx
-import { useState } from 'react';
-import Navbar from '../components/Navbar';
-import IntroScreen from '../components/IntroScreen'; // ← must import this
-import Hero from '../components/Hero';
-import About from '../components/About';
-import Services from '../components/Services';
-import Pricing from '../components/Pricing';
-import WhyUs from '../components/WhyUs';
-import Contact from '../components/Contact';
-import Footer from '../components/Footer';
+import React, { useState, useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Preload } from '@react-three/drei';
+import Scene from './components/Scene';
+import OverlayUI from './components/OverlayUI';
 
 function App() {
-  const [showMainContent, setShowMainContent] = useState(false);
+  const [view, setView] = useState('ROAD'); // ROAD, OVERVIEW, LIST, ABOUT
 
-  const handleEnterExperience = () => {
-    setShowMainContent(true);
-  };
+  useEffect(() => {
+    // Scroll to top when view changes away from road
+    if (view !== 'ROAD') {
+      window.scrollTo(0, 0);
+    }
+  }, [view]);
 
   return (
-    <div className="bg-[#0a0e1f] text-gray-100 min-h-screen w-full overflow-x-hidden">
-      {!showMainContent ? (
-        <IntroScreen onEnter={handleEnterExperience} />
-      ) : (
-        <>
-          <Navbar />
-          <main className="w-full">
-            <Hero />
-            <About />
-            <Services />
-            <Pricing />
-            <WhyUs />
-            <Contact />
-          </main>
-          <Footer />
-        </>
-      )}
-    </div>
+    <>
+      {/* 
+        This div provides the scroll height for the window. 
+        Only needed when we are in ROAD view so we can scroll through the 3D scene.
+      */}
+      <div className={`w-full ${view === 'ROAD' ? 'h-[600vh]' : 'h-screen overflow-hidden'}`}>
+        <div className="fixed inset-0 w-full h-full z-0 bg-transparent">
+           <Canvas camera={{ position: [0, 5, 15], fov: 60 }} dpr={[1, 2]}>
+              <Scene view={view} />
+              <Preload all />
+           </Canvas>
+        </div>
+
+        {/* 2D UI Overlay Layer */}
+        <OverlayUI view={view} setView={setView} />
+      </div>
+    </>
   );
 }
 
