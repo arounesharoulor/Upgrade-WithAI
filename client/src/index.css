@@ -1,184 +1,53 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&family=Syncopate:wght@400;700&display=swap');
+
 @layer base {
-  :root {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 98%;
-    --primary: 59 89% 56%;
-    --primary-dark: 59 100% 40%;
-    --accent: 180 100% 50%;
-    --text-muted: 0 0% 71%;
-  }
-
-  * {
-    @apply transition-colors duration-300;
-  }
-
   body {
-    @apply bg-gradient-to-b from-[#050810] via-[#0a0e1f] to-[#0f1729] text-gray-100 min-h-screen font-sans antialiased;
-    margin: 0;
-    line-height: 1.6;
+    @apply m-0 p-0 antialiased overflow-x-hidden text-[#1a1a1a];
+    background-color: #edf1fb;
+    font-family: 'Inter', sans-serif;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
-  h1 {
-    @apply text-4xl md:text-6xl font-bold tracking-tight leading-tight text-white;
-  }
-
-  h2 {
-    @apply text-3xl md:text-4xl font-bold tracking-tight text-white mb-6;
-  }
-
-  h3 {
-    @apply text-xl md:text-2xl font-semibold text-white mb-4;
-  }
-
-  h4 {
-    @apply text-lg font-semibold text-white mb-3;
-  }
-
-  p {
-    @apply text-sm md:text-base text-gray-300 leading-relaxed;
-  }
-
-  a {
-    @apply text-cyan-400 hover:text-cyan-300 transition-colors;
-  }
-
-  button {
-    @apply font-semibold transition-all duration-300;
+  /* Add subtle grain overlay */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.1;
+    z-index: 9999;
   }
 }
 
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
+.font-wide {
+  font-family: 'Syncopate', sans-serif;
+  letter-spacing: -0.05em;
+}
 
-@layer utilities {
-  .glass {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
-  }
+.font-sans {
+  font-family: 'Inter', sans-serif;
+}
 
-  .glass-alt {
-    @apply bg-white/[0.08] backdrop-blur-2xl border border-white/20 rounded-2xl;
-  }
+.nav-link {
+  @apply text-right text-lg md:text-xl font-bold text-gray-400 hover:text-gray-900 hover:scale-105 origin-right transition-all duration-300 cursor-pointer uppercase;
+}
 
-  /* Subtler neon glows: reduced blur and opacity for gentler effect */
-  .neon-glow-cyan {
-    @apply shadow-[0_0_14px_#22d3ee33] hover:shadow-[0_0_22px_#22d3ee44] transition-shadow duration-300;
-  }
+.nav-link.active {
+  @apply text-gray-900;
+}
 
-  /* Stone / muted warm glow for premium accents (replaces orange glow) */
-  .neon-glow-stone {
-    @apply shadow-[0_0_14px_#bfa06a33] hover:shadow-[0_0_22px_#bfa06a44] transition-shadow duration-300;
-  }
-
-  .neon-glow-emerald {
-    @apply shadow-[0_0_14px_#10b98133] hover:shadow-[0_0_22px_#10b98144] transition-shadow duration-300;
-  }
-
-  .btn-primary {
-    @apply px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-cyan-600 shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300;
-  }
-
-  .btn-secondary {
-    @apply px-6 md:px-8 py-3 md:py-4 bg-white/10 backdrop-blur-sm text-white font-bold rounded-lg border border-white/20 hover:bg-white/20 shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300;
-  }
-
-  .btn-outline {
-    @apply px-6 md:px-8 py-3 md:py-4 text-white font-bold rounded-lg border-2 border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300;
-  }
-
-  .section-padding {
-    @apply py-16 md:py-24 lg:py-32;
-  }
-
-  .container-custom {
-    @apply max-w-7xl mx-auto px-4 md:px-8 lg:px-12;
-  }
-
-  .text-gradient {
-    @apply bg-gradient-to-r from-cyan-400 via-emerald-400 to-blue-400 bg-clip-text text-transparent;
-  }
-
-  .text-gradient-warm {
-    @apply bg-gradient-to-r from-slate-300 to-slate-500 bg-clip-text text-transparent;
-  }
-
-  .gradient-border {
-    @apply relative bg-gradient-to-r from-cyan-500 to-emerald-500 p-[2px] rounded-xl;
-  }
-
-  .text-shadow-lg {
-    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  }
-
-  .underline-gradient {
-    @apply relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-1 after:bg-gradient-to-r after:from-cyan-400 after:to-emerald-400 after:rounded-full;
-  }
-
-  .scroll-smooth {
-    scroll-behavior: smooth;
-  }
-
-  /* Muted icon badge with softer gradient and subtle shadow */
-  .icon-symbol {
-    @apply w-16 h-16 bg-gradient-to-br from-cyan-500/90 to-emerald-500/85 rounded-lg flex items-center justify-center text-white text-xl font-bold mb-4 shadow-sm;
-  }
-
-  .icon-symbol-lg {
-    @apply w-20 h-20 bg-gradient-to-br from-cyan-500 to-emerald-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold mb-6;
-  }
-
-  .service-item {
-    @apply py-8 md:py-12 border-b border-white/10 last:border-b-0;
-  }
-
-  .service-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12;
-  }
-
-  .service-column {
-    @apply flex flex-col space-y-4;
-  }
-
-  .feature-list {
-    @apply space-y-2 text-gray-300;
-  }
-
-  .feature-list li {
-    @apply flex items-start space-x-2;
-  }
-
-  .feature-list li:before {
-    @apply content-['•'] text-cyan-400 font-bold mr-2 flex-shrink-0;
-  }
-
-  .divider {
-    @apply h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-12 md:my-16;
-  }
-
-  .section-header {
-    @apply text-center mb-12 md:mb-16;
-  }
-
-  .highlight-text {
-    @apply text-cyan-400 font-semibold;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .fade-in {
-    animation: fadeIn 0.6s ease-out;
-  }
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
