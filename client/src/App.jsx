@@ -4,6 +4,7 @@ import { Preload } from '@react-three/drei';
 import { useScroll } from 'framer-motion';
 import Scene from './components/Scene';
 import OverlayUI from './components/OverlayUI';
+import RoadContent from './components/RoadContent';
 
 function App() {
   const [view, setView] = useState('ROAD'); // ROAD, OVERVIEW, LIST, ABOUT
@@ -32,6 +33,9 @@ function App() {
 
         {/* 2D UI Overlay Layer */}
         <OverlayUI view={view} setView={setView} scrollYProgress={scrollYProgress} />
+        
+        {/* Road Content Overlay that shows details when scrolling in 3D */}
+        {view === 'ROAD' && <RoadContent />}
       </div>
     </>
   );

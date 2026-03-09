@@ -51,15 +51,15 @@ export default function RoadContent() {
 
   return (
     <>
-      <ScrollSection progress={scrollYProgress} start={0} end={0.25} title={<span className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">ABOUT US</span>}>
-        <div className="backdrop-blur-md bg-black/40 p-8 md:p-12 rounded-3xl border border-white/20 shadow-2xl mx-auto max-w-4xl">
-          <p className="text-white/90 text-base md:text-lg lg:text-xl font-sans leading-relaxed font-light mb-6">
-             We blend <span className="font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">Design, Execution, and Artificial Intelligence</span> to build intelligent digital ecosystems that solve complex real-world problems.
+      <ScrollSection progress={scrollYProgress} start={0} end={0.25} title="ABOUT US">
+        <div className="backdrop-blur-md bg-white/50 p-8 md:p-12 rounded-3xl border border-white/60 shadow-xl mx-auto max-w-4xl">
+          <p className="text-[#1a1a1a] text-base md:text-lg lg:text-xl font-sans leading-relaxed font-light mb-6">
+             We blend <span className="font-bold text-[#2d52a3] drop-shadow-sm">Design, Execution, and Artificial Intelligence</span> to build intelligent digital ecosystems that solve complex real-world problems.
           </p>
-          <div className="text-white/70 text-sm md:text-base font-sans leading-relaxed font-light text-left space-y-4">
+          <div className="text-gray-800 text-sm md:text-base font-sans leading-relaxed font-light text-left space-y-4">
              <p>As a premium engineering firm, we exist at the intersection of aesthetic brilliance and computational power. Our methodologies eliminate technical debt from day one, allowing startups and enterprises to launch highly scalable infrastructure without compromise.</p>
              <p>We leverage cutting-edge tools to minimize time-to-market. By automating heavy data flows and utilizing machine learning models, we transform traditional software environments into self-optimizing platforms.</p>
-             <p className="font-wide font-bold uppercase tracking-wider text-white/90 text-center mt-6 text-xs drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Excellence is not an act, but a habit.</p>
+             <p className="font-wide font-bold uppercase tracking-wider text-[#1a1a1a] text-center mt-6 text-xs">Excellence is not an act, but a habit.</p>
           </div>
         </div>
       </ScrollSection>
