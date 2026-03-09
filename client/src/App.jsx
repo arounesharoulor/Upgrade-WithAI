@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Preload } from '@react-three/drei';
+import { useScroll } from 'framer-motion';
 import Scene from './components/Scene';
 import OverlayUI from './components/OverlayUI';
 
 function App() {
   const [view, setView] = useState('ROAD'); // ROAD, OVERVIEW, LIST, ABOUT
+  const { scrollYProgress } = useScroll();
 
   useEffect(() => {
     // Scroll to top when view changes away from road
@@ -29,7 +31,7 @@ function App() {
         </div>
 
         {/* 2D UI Overlay Layer */}
-        <OverlayUI view={view} setView={setView} />
+        <OverlayUI view={view} setView={setView} scrollYProgress={scrollYProgress} />
       </div>
     </>
   );
