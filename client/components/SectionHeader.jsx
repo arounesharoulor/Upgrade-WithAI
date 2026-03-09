@@ -9,7 +9,7 @@ export default function SectionHeader({ eyebrow, title, highlight, subtitle, cla
         </div>
       )}
 
-      <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-4 leading-tight">
+      <h2 className="text-2xl lg:text-3xl font-semibold tracking-tight mb-4 leading-tight">
         {title} {highlight && <span className={highlightClass}>{highlight}</span>}
       </h2>
 

@@ -6,23 +6,25 @@ import SectionHeader from './SectionHeader';
 
 export default function Contact() {
   return (
-    <Section id="contact" className="relative overflow-hidden bg-[#0a0e1f] py-24 md:py-32 text-green-200">
+    <Section id="contact" className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-rose-900/10 to-pink-900/20 py-24 md:py-32 text-white">
+      {/* background gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-rose-900/10 to-pink-900/20" />
       <div className="max-w-5xl mx-auto text-center relative z-10">
         <SectionHeader
           eyebrow="Let's Talk"
-          eyebrowClass="text-green-400"
+          eyebrowClass="text-slate-300"
           title="Get in Touch"
           
-          highlightClass="text-green-300"
+          highlightClass="text-rose-300"
           subtitle="Fill out the form or use one of the quick contact options. We're responsive and ready to help."
-          subtitleClass="text-green-200"
+          subtitleClass="text-slate-300"
         />
 
         {/* contact form */}
         <motion.form
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false, margin: "-100px" }}
           transition={{ delay: 0.4, duration: 0.8 }}
           className="max-w-xl mx-auto grid grid-cols-1 gap-6 mb-16"
           onSubmit={e => e.preventDefault()}
@@ -44,7 +46,7 @@ export default function Contact() {
           />
           <button
             type="submit"
-            className="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105"
+            className="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-lg font-medium transition-all hover:scale-105"
           >
             Send Message
           </button>
@@ -53,7 +55,7 @@ export default function Contact() {
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false, margin: "-100px" }}
           transition={{ delay: 0.8, duration: 0.8 }}
           className="flex flex-col sm:flex-row gap-6 justify-center mb-16"
         >
@@ -77,14 +79,14 @@ export default function Contact() {
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false, margin: "-100px" }}
           transition={{ delay: 0.6, duration: 0.8 }}
-          className="text-lg text-green-200"
+          className="text-lg text-slate-300"
         >
           Or email us at{' '}
           <a
             href="mailto:admin@upgradewithaifolks.com"
-            className="text-cyan-400 hover:text-cyan-300 underline transition-colors"
+            className="text-rose-300 hover:text-rose-200 underline transition-colors"
           >
             admin@upgradewithaifolks.com
           </a>

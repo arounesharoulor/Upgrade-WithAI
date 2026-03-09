@@ -13,7 +13,7 @@ export default function Navbar() {
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center font-black text-xl text-white shadow-lg">
             ⚡
           </div>
-          <span className="text-xl font-bold tracking-tight">UpgradeWithAIFolks</span>
+          <span className="text-xl font-semibold tracking-tight">UpgradeWithAIFolks</span>
         </div>
 
         {/* desktop links */}

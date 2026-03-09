@@ -5,11 +5,11 @@ import InfoCard from './InfoCard';
 
 export default function About() {
   return (
-    <Section id="about" className="relative overflow-hidden bg-[#111827] py-24 md:py-32 text-white">
+    <Section id="about" className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-cyan-900/10 to-teal-900/20 py-24 md:py-32 text-white">
       {/* background 3D animation */}
       <div className="absolute inset-0">
         <AboutScene />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#111827]/80 to-[#0a0e1f]/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-cyan-900/10 to-teal-900/20" />
       </div>
 
       <div className="relative z-10 max-w-3xl mx-auto text-center">
@@ -22,19 +22,19 @@ export default function About() {
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-3xl lg:text-4xl font-bold mb-2 relative inline-block"
+          viewport={{ once: false, margin: "-100px" }}
+          className="text-2xl lg:text-3xl font-semibold mb-2 relative inline-block bg-gradient-to-r from-slate-200 via-cyan-200 to-teal-200 bg-clip-text text-transparent"
         >
           About Us
-          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-cyan-400 to-purple-400 mt-1" />
+          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-cyan-400 to-cyan-400 mt-1" />
         </motion.h2>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false, margin: "-100px" }}
           transition={{ delay: 0.3 }}
-          className="text-lg leading-relaxed"
+          className="text-base leading-relaxed text-slate-300"
         >
           At UpgradeWithAIFolks, we blend design, development, and AI to build products that solve real problems.
           Our team moves fast, thinks strategically, and keeps your users front and center. We're more than
@@ -49,7 +49,7 @@ export default function About() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false, margin: "-100px" }}
           transition={{ delay: 0.6 }}
           className="text-lg leading-relaxed mt-6"
         >
