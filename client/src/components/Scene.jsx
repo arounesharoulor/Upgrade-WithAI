@@ -1,7 +1,7 @@
 import React, { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Float, Text } from '@react-three/drei';
+import { Float, Text, Icosahedron, TorusKnot, MeshDistortMaterial, Sparkles, Stars, Clouds, Cloud } from '@react-three/drei';
 
 export default function Scene({ view }) {
   const groupRef = useRef();
@@ -49,10 +49,10 @@ export default function Scene({ view }) {
   const cameraTarget = useRef(new THREE.Vector3());
   const cameraPosition = useRef(new THREE.Vector3(0, 5, 15));
 
-  const darkColor = new THREE.Color("#0f172a");
-  const lightColor = new THREE.Color("#d4e0fa");
-  const darkParticle = new THREE.Color("#e2e8f0"); // Lighter particles on dark bg
-  const lightParticle = new THREE.Color("#1a3b8c");
+  const darkColor = new THREE.Color("#020617"); // very dark slate
+  const lightColor = new THREE.Color("#1e293b"); // mild dark slate
+  const darkParticle = new THREE.Color("#3b82f6"); 
+  const lightParticle = new THREE.Color("#8b5cf6"); 
 
   useFrame((state) => {
     if (view === 'ROAD') {
@@ -133,15 +133,115 @@ export default function Scene({ view }) {
         />
       </points>
 
-      {/* Embedded 3D Information Cards along the road map - removed in favor of 2D HTML RoadContent */}
+      {/* Decorative 3D Floating Objects along the path */}
       {view === 'ROAD' && (
         <>
-            {/* HTML Overlay now handles these sections */}
+            {/* Immersive Atmos-style Cloud Intro */}
+            <Clouds renderOrder={2} limit={400} material={THREE.MeshLambertMaterial}>
+               {/* Extremely dense cloud tunnel right at the beginning */}
+               <Cloud seed={1} position={[0, -2, -10]} bounds={[15, 5, 20]} volume={15} color="#cbd5e1" opacity={0.6} fade={20} />
+               <Cloud seed={2} position={[5, 3, -15]} bounds={[10, 5, 15]} volume={10} color="#94a3b8" opacity={0.8} fade={20} />
+               <Cloud seed={3} position={[-5, 4, -20]} bounds={[10, 5, 15]} volume={10} color="#e2e8f0" opacity={0.5} fade={20} />
+               <Cloud seed={4} position={[0, -3, -5]} bounds={[10, 5, 10]} volume={15} color="#64748b" opacity={0.4} fade={20} />
+            </Clouds>
+
+            {/* Subtle atmosphere particles remaining deep down the path */}
+            <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+            <Sparkles count={400} scale={[20, 20, 30]} size={4} speed={1} opacity={0.3} position={[0, 0, -30]} color="#38bdf8" />
+            
+            <FloatingObjects />
+            <PathRings />
         </>
       )}
+
     </group>
   );
 }
+
+function PathRings() {
+  const rings = useMemo(() => {
+    return Array.from({ length: 8 }).map((_, i) => {
+      const z = -(i * 30 + 15);
+      const x = Math.sin(z * 0.05) * 8;
+      const y = Math.cos(z * 0.03) * 3;
+      return { x, y, z, key: i };
+    });
+  }, []);
+  
+  const ringRef = useRef();
+  useFrame((state) => {
+    if (ringRef.current) {
+        ringRef.current.children.forEach((child, i) => {
+            child.rotation.x = state.clock.elapsedTime * 0.5 + i;
+            child.rotation.y = state.clock.elapsedTime * 0.2 + i;
+        });
+    }
+  });
+
+  return (
+    <group ref={ringRef}>
+      {rings.map((r, index) => (
+         <mesh key={r.key} position={[r.x, r.y, r.z]}>
+           <torusGeometry args={[8, 0.05, 16, 100]} />
+           <meshBasicMaterial color={index % 2 === 0 ? "#60a5fa" : "#c084fc"} transparent opacity={0.3} wireframe />
+         </mesh>
+      ))}
+    </group>
+  );
+}
+
+
+function FloatingObjects() {
+  const objects = useMemo(() => {
+    // Generate some objects along the negative Z path
+    return Array.from({ length: 25 }).map((_, i) => {
+      const z = -(i * 10 + 5);
+      const xPath = Math.sin(z * 0.05) * 8;
+      const yPath = Math.cos(z * 0.03) * 3;
+      
+      // Scatter them around the path
+      const x = xPath + (Math.random() - 0.5) * 25;
+      const y = yPath + (Math.random() - 0.5) * 20;
+      
+      // Randomly pick a shape type: 0 = Icosahedron, 1 = TorusKnot, 2 = Octahedron
+      const type = Math.floor(Math.random() * 3);
+      const scale = Math.random() * 0.6 + 0.3;
+      const speed = Math.random() * 2 + 1;
+      
+      return { x, y, z, type, scale, speed, key: i };
+    });
+  }, []);
+
+  return (
+    <>
+      {objects.map((obj) => (
+        <Float 
+           key={obj.key} 
+           position={[obj.x, obj.y, obj.z]} 
+           speed={obj.speed} 
+           rotationIntensity={2} 
+           floatIntensity={3}
+        >
+           {obj.type === 0 ? (
+              <Icosahedron args={[1, 0]} scale={obj.scale}>
+                 <meshStandardMaterial color="#38bdf8" wireframe opacity={0.4} transparent />
+              </Icosahedron>
+           ) : obj.type === 1 ? (
+              <TorusKnot args={[0.5, 0.1, 64, 8]} scale={obj.scale}>
+                 <MeshDistortMaterial color="#818cf8" distort={0.5} speed={3} opacity={0.5} transparent />
+              </TorusKnot>
+           ) : (
+              <mesh scale={obj.scale * 0.8}>
+                 <octahedronGeometry args={[1, 0]} />
+                 <meshStandardMaterial color="#f472b6" wireframe opacity={0.4} transparent />
+              </mesh>
+           )}
+        </Float>
+      ))}
+    </>
+  );
+}
+
 
 function TextCard({ position, title, text }) {
     // Adding randomness to float to separate cards visually
