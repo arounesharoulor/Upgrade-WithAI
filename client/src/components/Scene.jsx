@@ -1,12 +1,14 @@
 import React, { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Float, Text, Icosahedron, TorusKnot, MeshDistortMaterial, Sparkles, Stars, Clouds, Cloud } from '@react-three/drei';
+import { Float, Text, Icosahedron, TorusKnot, MeshDistortMaterial, Sparkles, Stars } from '@react-three/drei';
 
 export default function Scene({ view }) {
   const groupRef = useRef();
   const particlesRef = useRef();
   const scrollRef = useRef(0);
+  const tornadoRef = useRef(false);
+  const tornadoTime = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,7 +19,17 @@ export default function Scene({ view }) {
       }
     };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    const handleTornado = () => {
+      tornadoRef.current = true;
+      tornadoTime.current = 0;
+    };
+    window.addEventListener('trigger-tornado', handleTornado);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('trigger-tornado', handleTornado);
+    };
   }, []);
 
   const particleCount = 4000;
@@ -49,19 +61,49 @@ export default function Scene({ view }) {
   const cameraTarget = useRef(new THREE.Vector3());
   const cameraPosition = useRef(new THREE.Vector3(0, 5, 15));
 
-  const darkColor = new THREE.Color("#020617"); // very dark slate
-  const lightColor = new THREE.Color("#1e293b"); // mild dark slate
-  const darkParticle = new THREE.Color("#3b82f6"); 
-  const lightParticle = new THREE.Color("#8b5cf6"); 
+  const colors = useMemo(() => [
+    new THREE.Color("#020617"), // Hero (0-0.15) deep space
+    new THREE.Color("#062029"), // About (0.15-0.35) mild teal
+    new THREE.Color("#1e1b4b"), // Services (0.35-0.6) indigo
+    new THREE.Color("#2a1202"), // Approach (0.6-0.82) amber dark
+    new THREE.Color("#020617"), // Build (0.82-1.0) deep slate
+  ], []);
+
+  const particleColors = useMemo(() => [
+    new THREE.Color("#3b82f6"), // blue
+    new THREE.Color("#34d399"), // emerald
+    new THREE.Color("#a78bfa"), // purple
+    new THREE.Color("#fbbf24"), // amber
+    new THREE.Color("#60a5fa"), // blue
+  ], []);
 
   useFrame((state) => {
     if (view === 'ROAD') {
-      // Background logic based on scrollRef
+      // Background logic based on scrollRef with multiple color stops
       if (state.scene.fog && particlesRef.current) {
-        // scroll between 0 to 0.25 is jumping from dark to light
-        const t = Math.min(Math.max(scrollRef.current * 4, 0), 1); 
-        state.scene.fog.color.lerpColors(darkColor, lightColor, t);
-        particlesRef.current.material.color.lerpColors(darkParticle, lightParticle, t);
+        const s = scrollRef.current;
+        let c1, c2, t;
+        let p1, p2;
+
+        if (s < 0.15) { 
+           c1 = colors[0]; c2 = colors[1]; t = Math.max(0, s / 0.15); 
+           p1 = particleColors[0]; p2 = particleColors[1];
+        } else if (s < 0.35) { 
+           c1 = colors[1]; c2 = colors[2]; t = (s - 0.15) / 0.20; 
+           p1 = particleColors[1]; p2 = particleColors[2];
+        } else if (s < 0.60) { 
+           c1 = colors[2]; c2 = colors[3]; t = (s - 0.35) / 0.25; 
+           p1 = particleColors[2]; p2 = particleColors[3];
+        } else if (s < 0.82) { 
+           c1 = colors[3]; c2 = colors[4]; t = (s - 0.60) / 0.22; 
+           p1 = particleColors[3]; p2 = particleColors[4];
+        } else { 
+           c1 = colors[4]; c2 = colors[4]; t = 0; 
+           p1 = particleColors[4]; p2 = particleColors[4];
+        }
+        
+        state.scene.fog.color.lerpColors(c1, c2, t);
+        particlesRef.current.material.color.lerpColors(p1, p2, t);
       }
 
       // Move camera forward based on scroll progress (0 to 1) -> maps to Z 0 to -240
@@ -82,18 +124,50 @@ export default function Scene({ view }) {
       cameraTarget.current.y = THREE.MathUtils.lerp(cameraTarget.current.y, yPath, 0.04);
       cameraTarget.current.z = Math.min(cameraPosition.current.z - 15, targetZ - 10);
       
+      // Tornado / Loop effect going backwards
+      if (tornadoRef.current) {
+          tornadoTime.current += state.clock.getDelta(); // frame-rate independent
+          const angle = tornadoTime.current * 12; // Spin speed!
+          state.camera.up.set(Math.sin(angle), Math.cos(angle), 0).normalize();
+          
+          if (scrollRef.current < 0.05 && tornadoTime.current > 0.5) {
+              tornadoRef.current = false;
+          }
+      } else {
+          // smoothly restore camera up vector
+          state.camera.up.lerp(new THREE.Vector3(0, 1, 0), 0.05);
+      }
+
       state.camera.lookAt(cameraTarget.current);
 
       groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, 0, 0.05);
       groupRef.current.scale.set(1, 1, 1);
     } else {
       // In other views, we move the camera away and show a dispersed view
-      state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 40, 0.015);
-      state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 30, 0.015);
-      state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 30, 0.015);
-      state.camera.lookAt(0, 0, -50);
+      if (view === 'PRICING') {
+          state.camera.position.lerp(new THREE.Vector3(0, 5, 40), 0.02);
+          cameraTarget.current.lerp(new THREE.Vector3(0, 5, 0), 0.02);
+      } else if (view === 'CONTACT') {
+          state.camera.position.lerp(new THREE.Vector3(-20, 10, 20), 0.02);
+          cameraTarget.current.lerp(new THREE.Vector3(0, 5, -10), 0.02);
+      } else {
+          state.camera.position.lerp(new THREE.Vector3(40, 30, 30), 0.02);
+          cameraTarget.current.lerp(new THREE.Vector3(0, 0, -50), 0.02);
+      }
+
+      state.camera.up.lerp(new THREE.Vector3(0, 1, 0), 0.05);
+      state.camera.lookAt(cameraTarget.current);
       
       groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, -15, 0.02);
+
+      // Change fog color
+      if (state.scene.fog && particlesRef.current) {
+         let targetFog = new THREE.Color("#020617");
+         if (view === 'PRICING') targetFog = new THREE.Color("#080c1f");
+         if (view === 'CONTACT') targetFog = new THREE.Color("#02120b");
+         state.scene.fog.color.lerp(targetFog, 0.05);
+         particlesRef.current.material.color.lerp(new THREE.Color("#aaaaaa"), 0.05);
+      }
     }
     
     // Slight rotation to all particles for life
@@ -133,35 +207,71 @@ export default function Scene({ view }) {
         />
       </points>
 
+      {/* Immersive Start / Intro atmosphere (Keep for all views) */}
+      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+      <Sparkles count={1500} scale={[50, 50, 50]} size={3} speed={0.4} opacity={0.6} position={[0, 0, 0]} color="#ffffff" />
+      
       {/* Decorative 3D Floating Objects along the path */}
       {view === 'ROAD' && (
         <>
-            {/* Immersive Atmos-style Cloud Intro */}
-            <Clouds renderOrder={2} limit={400} material={THREE.MeshLambertMaterial}>
-               {/* Extremely dense cloud tunnel right at the beginning */}
-               <Cloud seed={1} position={[0, -2, -10]} bounds={[15, 5, 20]} volume={15} color="#cbd5e1" opacity={0.6} fade={20} />
-               <Cloud seed={2} position={[5, 3, -15]} bounds={[10, 5, 15]} volume={10} color="#94a3b8" opacity={0.8} fade={20} />
-               <Cloud seed={3} position={[-5, 4, -20]} bounds={[10, 5, 15]} volume={10} color="#e2e8f0" opacity={0.5} fade={20} />
-               <Cloud seed={4} position={[0, -3, -5]} bounds={[10, 5, 10]} volume={15} color="#64748b" opacity={0.4} fade={20} />
-            </Clouds>
-
-            {/* Subtle atmosphere particles remaining deep down the path */}
-            <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
-            <Sparkles count={400} scale={[20, 20, 30]} size={4} speed={1} opacity={0.3} position={[0, 0, -30]} color="#38bdf8" />
-            
-            <FloatingObjects />
+            <Sparkles count={800} scale={[25, 25, 30]} size={6} speed={1} opacity={0.3} position={[0, 0, -20]} color="#38bdf8" />
+            <IntroAsteroid />
+            <SectionSpecificObjects />
             <PathRings />
         </>
       )}
+
+      {view === 'PRICING' && <PricingAnimation />}
+      {view === 'CONTACT' && <ContactAnimation />}
 
     </group>
   );
 }
 
+function PricingAnimation() {
+   const group = useRef();
+   useFrame((state, delta) => {
+      if (group.current) {
+          group.current.rotation.y += delta * 0.2;
+          group.current.rotation.x += delta * 0.1;
+      }
+   });
+   return (
+       <group ref={group} position={[0, 5, 0]}>
+           <Icosahedron args={[8, 1]}>
+               <meshStandardMaterial color="#3b82f6" wireframe transparent opacity={0.3} />
+           </Icosahedron>
+           <Icosahedron args={[6, 0]}>
+               <meshStandardMaterial color="#ffffff" transparent opacity={0.1} />
+           </Icosahedron>
+           <Sparkles count={400} scale={[20, 20, 20]} size={6} color="#60a5fa" opacity={0.8} speed={2} />
+       </group>
+   );
+}
+
+function ContactAnimation() {
+   const group = useRef();
+   useFrame((state, delta) => {
+      if (group.current) {
+          group.current.rotation.y -= delta * 0.15;
+          group.current.position.y = 5 + Math.sin(state.clock.elapsedTime) * 1;
+      }
+   });
+   return (
+       <group ref={group} position={[0, 5, -10]}>
+           <TorusKnot args={[5, 0.2, 100, 16]}>
+               <MeshDistortMaterial color="#34d399" distort={0.4} speed={2} transparent opacity={0.6} wireframe />
+           </TorusKnot>
+           <Sparkles count={300} scale={[15, 15, 15]} size={8} color="#10b981" opacity={0.8} speed={3} />
+       </group>
+   );
+}
+
 function PathRings() {
   const rings = useMemo(() => {
-    return Array.from({ length: 8 }).map((_, i) => {
-      const z = -(i * 30 + 15);
+    // Dense tunnel for Services Section (Z = -90 to -140)
+    return Array.from({ length: 5 }).map((_, i) => {
+      const z = -(90 + i * 10);
       const x = Math.sin(z * 0.05) * 8;
       const y = Math.cos(z * 0.03) * 3;
       return { x, y, z, key: i };
@@ -172,8 +282,8 @@ function PathRings() {
   useFrame((state) => {
     if (ringRef.current) {
         ringRef.current.children.forEach((child, i) => {
-            child.rotation.x = state.clock.elapsedTime * 0.5 + i;
-            child.rotation.y = state.clock.elapsedTime * 0.2 + i;
+            child.rotation.x = state.clock.elapsedTime * 0.3 + i;
+            child.rotation.y = state.clock.elapsedTime * 0.1 + i;
         });
     }
   });
@@ -182,8 +292,8 @@ function PathRings() {
     <group ref={ringRef}>
       {rings.map((r, index) => (
          <mesh key={r.key} position={[r.x, r.y, r.z]}>
-           <torusGeometry args={[8, 0.05, 16, 100]} />
-           <meshBasicMaterial color={index % 2 === 0 ? "#60a5fa" : "#c084fc"} transparent opacity={0.3} wireframe />
+           <torusGeometry args={[10, 0.05, 16, 100]} />
+           <meshBasicMaterial color={index % 2 === 0 ? "#818cf8" : "#c084fc"} transparent opacity={0.3} wireframe />
          </mesh>
       ))}
     </group>
@@ -191,49 +301,55 @@ function PathRings() {
 }
 
 
-function FloatingObjects() {
+function SectionSpecificObjects() {
   const objects = useMemo(() => {
-    // Generate some objects along the negative Z path
-    return Array.from({ length: 25 }).map((_, i) => {
-      const z = -(i * 10 + 5);
-      const xPath = Math.sin(z * 0.05) * 8;
-      const yPath = Math.cos(z * 0.03) * 3;
-      
-      // Scatter them around the path
-      const x = xPath + (Math.random() - 0.5) * 25;
-      const y = yPath + (Math.random() - 0.5) * 20;
-      
-      // Randomly pick a shape type: 0 = Icosahedron, 1 = TorusKnot, 2 = Octahedron
-      const type = Math.floor(Math.random() * 3);
-      const scale = Math.random() * 0.6 + 0.3;
-      const speed = Math.random() * 2 + 1;
-      
-      return { x, y, z, type, scale, speed, key: i };
-    });
+    const list = [];
+    
+    // About Section (Z: -35 to -80): Icosahedrons
+    for (let i=0; i<4; i++) {
+       const z = -(40 + Math.random() * 40);
+       const x = Math.sin(z * 0.05) * 8 + (Math.random()-0.5)*25;
+       const y = Math.cos(z * 0.03) * 3 + (Math.random()-0.5)*20;
+       list.push({ type: 'icosahedron', x, y, z, scale: Math.random()*0.6+0.3, speed: Math.random()*2+1 });
+    }
+    
+    // Services Section (Z: -80 to -140): TorusKnots
+    for (let i=0; i<3; i++) {
+       const z = -(85 + Math.random() * 55);
+       const x = Math.sin(z * 0.05) * 8 + (Math.random()-0.5)*25;
+       const y = Math.cos(z * 0.03) * 3 + (Math.random()-0.5)*20;
+       list.push({ type: 'torusknot', x, y, z, scale: Math.random()*0.6+0.3, speed: Math.random()*2+1 });
+    }
+
+    // Approach Section (Z: -140 to -190): Octahedrons
+    for (let i=0; i<5; i++) {
+       const z = -(145 + Math.random() * 45);
+       const x = Math.sin(z * 0.05) * 8 + (Math.random()-0.5)*25;
+       const y = Math.cos(z * 0.03) * 3 + (Math.random()-0.5)*20;
+       list.push({ type: 'octahedron', x, y, z, scale: Math.random()*0.6+0.3, speed: Math.random()*2+1 });
+    }
+
+    return list;
   }, []);
 
   return (
     <>
-      {objects.map((obj) => (
-        <Float 
-           key={obj.key} 
-           position={[obj.x, obj.y, obj.z]} 
-           speed={obj.speed} 
-           rotationIntensity={2} 
-           floatIntensity={3}
-        >
-           {obj.type === 0 ? (
+      {objects.map((obj, i) => (
+        <Float key={i} position={[obj.x, obj.y, obj.z]} speed={obj.speed} rotationIntensity={2} floatIntensity={3}>
+           {obj.type === 'icosahedron' && (
               <Icosahedron args={[1, 0]} scale={obj.scale}>
-                 <meshStandardMaterial color="#38bdf8" wireframe opacity={0.4} transparent />
+                 <meshStandardMaterial color="#34d399" wireframe opacity={0.4} transparent />
               </Icosahedron>
-           ) : obj.type === 1 ? (
+           )}
+           {obj.type === 'torusknot' && (
               <TorusKnot args={[0.5, 0.1, 64, 8]} scale={obj.scale}>
-                 <MeshDistortMaterial color="#818cf8" distort={0.5} speed={3} opacity={0.5} transparent />
+                 <MeshDistortMaterial color="#a78bfa" distort={0.5} speed={3} opacity={0.5} transparent />
               </TorusKnot>
-           ) : (
+           )}
+           {obj.type === 'octahedron' && (
               <mesh scale={obj.scale * 0.8}>
                  <octahedronGeometry args={[1, 0]} />
-                 <meshStandardMaterial color="#f472b6" wireframe opacity={0.4} transparent />
+                 <meshStandardMaterial color="#fbbf24" wireframe opacity={0.4} transparent />
               </mesh>
            )}
         </Float>
@@ -281,4 +397,54 @@ function TextCard({ position, title, text }) {
             </Float>
         </group>
     )
+}
+
+function IntroAsteroid() {
+  const asteroidRef = useRef();
+  const materialRef = useRef();
+  
+  useFrame((state, delta) => {
+    if (asteroidRef.current && materialRef.current) {
+        const t = state.clock.elapsedTime;
+        const impactTime = 1.5;
+        if (t < impactTime) {
+            const progress = t / impactTime;
+            // Accelerating curve for striking
+            const ease = progress * progress * progress; 
+            const x = THREE.MathUtils.lerp(60, 0, ease);
+            const y = THREE.MathUtils.lerp(40, 0, ease); 
+            const z = THREE.MathUtils.lerp(20, 0, ease);
+            
+            asteroidRef.current.position.set(x, y, z);
+            asteroidRef.current.rotation.x += delta * 15;
+            asteroidRef.current.rotation.y += delta * 10;
+            
+            const scale = THREE.MathUtils.lerp(0.5, 2.5, ease);
+            asteroidRef.current.scale.set(scale, scale, scale);
+            materialRef.current.opacity = 1;
+        } else {
+            // After impact, shrink and fade rapidly to simulate bursting into the name
+            const timeAfterImpact = t - impactTime;
+            if (timeAfterImpact < 0.3) {
+               const shrinkProgress = timeAfterImpact / 0.3;
+               const shrinkEase = 1 - shrinkProgress;
+               const scale = 2.5 * shrinkEase;
+               asteroidRef.current.scale.set(scale, scale, scale);
+               materialRef.current.opacity = shrinkEase;
+               asteroidRef.current.rotation.x += delta * 40; 
+               asteroidRef.current.rotation.y += delta * 30;
+            } else {
+               asteroidRef.current.scale.set(0, 0, 0);
+               materialRef.current.opacity = 0;
+            }
+        }
+    }
+  });
+
+  return (
+    <mesh ref={asteroidRef}>
+        <dodecahedronGeometry args={[1, 1]} />
+        <MeshDistortMaterial ref={materialRef} color="#ffffff" emissive="#38bdf8" emissiveIntensity={2} distort={0.8} speed={5} roughness={0.2} metalness={0.8} transparent />
+    </mesh>
+  );
 }

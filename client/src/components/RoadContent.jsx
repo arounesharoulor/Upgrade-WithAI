@@ -27,18 +27,18 @@ function ScrollSection({ progress, start, end, title, children }) {
 
   return (
     <motion.div 
-      className="fixed inset-0 flex flex-col items-center justify-center px-4 z-10"
+      className="fixed inset-0 flex flex-col items-center justify-center px-4 z-10 pointer-events-none"
     >
        <motion.h2 
-          style={{ opacity: titleOpacity, scale: titleScale, pointerEvents: 'none' }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#2d52a3] font-wide font-bold text-4xl md:text-5xl lg:text-7xl tracking-wider text-center drop-shadow-xl z-20 w-full"
+          style={{ opacity: titleOpacity, scale: titleScale }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-wide font-bold text-3xl md:text-5xl lg:text-7xl tracking-wider text-center drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] z-20 w-full"
        >
           {title}
        </motion.h2>
        
        <motion.div
           style={{ opacity: detailOpacity, scale: detailScale, pointerEvents }}
-          className="w-full max-w-5xl text-center z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          className="w-full max-w-6xl text-center z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[85vh] overflow-y-auto hide-scrollbar"
        >
           {children}
        </motion.div>
@@ -51,81 +51,107 @@ export default function RoadContent() {
 
   return (
     <>
-      <ScrollSection progress={scrollYProgress} start={0} end={0.25} title="ABOUT US">
-        <div className="backdrop-blur-md bg-white/50 p-8 md:p-12 rounded-3xl border border-white/60 shadow-xl mx-auto max-w-4xl">
-          <p className="text-[#1a1a1a] text-base md:text-lg lg:text-xl font-sans leading-relaxed font-light mb-6">
-             We blend <span className="font-bold text-[#2d52a3] drop-shadow-sm">Design, Execution, and Artificial Intelligence</span> to build intelligent digital ecosystems that solve complex real-world problems.
+      <ScrollSection progress={scrollYProgress} start={0} end={0.15} title="">
+        <div className="flex flex-col items-center justify-center mt-32 md:mt-40">
+           <motion.div 
+             initial={{ opacity: 0, y: 10 }} 
+             animate={{ opacity: 1, y: 0 }} 
+             transition={{ delay: 1, duration: 2 }}
+             className="text-white/60 font-sans tracking-[0.3em] text-[10px] md:text-sm uppercase flex flex-col items-center"
+           >
+              <span>Scroll to start the journey</span>
+              <div className="w-[1px] h-12 bg-gradient-to-b from-white/60 to-transparent mt-4 animate-bounce"></div>
+           </motion.div>
+        </div>
+      </ScrollSection>
+
+      <ScrollSection progress={scrollYProgress} start={0.15} end={0.35} title="ABOUT US">
+        <div className="backdrop-blur-xl bg-slate-900/60 p-6 md:p-10 rounded-3xl border border-white/10 shadow-2xl mx-auto max-w-5xl">
+          <p className="text-white text-sm md:text-base lg:text-lg font-sans leading-relaxed mb-6">
+             At UpgradeWithAIFolks, we blend <span className="font-bold text-emerald-400 drop-shadow-sm">design, development, and AI</span> to build products that solve real problems. Our team moves fast, thinks strategically, and keeps your users front and center.
           </p>
-          <div className="text-gray-800 text-sm md:text-base font-sans leading-relaxed font-light text-left space-y-4">
-             <p>As a premium engineering firm, we exist at the intersection of aesthetic brilliance and computational power. Our methodologies eliminate technical debt from day one, allowing startups and enterprises to launch highly scalable infrastructure without compromise.</p>
-             <p>We leverage cutting-edge tools to minimize time-to-market. By automating heavy data flows and utilizing machine learning models, we transform traditional software environments into self-optimizing platforms.</p>
-             <p className="font-wide font-bold uppercase tracking-wider text-[#1a1a1a] text-center mt-6 text-xs">Excellence is not an act, but a habit.</p>
+          <div className="text-slate-300 text-xs md:text-sm font-sans leading-relaxed text-left space-y-4 mb-8">
+             <p>Founded in 2020 by a group of engineers and designers frustrated with bloated development cycles, we set out to create lean, intelligent solutions that launch quickly and iterate continuously. Every project we take on is backed by data, polished with craft, and aligned with business outcomes.</p>
+             <p>We believe in transparency, shared ownership, and the power of AI to amplify human creativity. From startups to enterprises, our clients rely on us to tackle their toughest challenges—turning ambitious ideas into products people love and businesses rely on.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+              <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                 <div className="text-2xl mb-2">⚡</div>
+                 <h4 className="text-white font-wide text-xs mb-1">Fast Turnaround</h4>
+                 <p className="text-slate-400 text-[10px] md:text-xs">Initial prototypes in under 30 days so you can test and iterate.</p>
+              </div>
+              <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                 <div className="text-2xl mb-2">🤖</div>
+                 <h4 className="text-white font-wide text-xs mb-1">AI-Driven</h4>
+                 <p className="text-slate-400 text-[10px] md:text-xs">Solutions leveraging machine learning to automate and elevate UX.</p>
+              </div>
+              <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                 <div className="text-2xl mb-2">🎯</div>
+                 <h4 className="text-white font-wide text-xs mb-1">User First</h4>
+                 <p className="text-slate-400 text-[10px] md:text-xs">Every decision is made to aim for clarity and conversion.</p>
+              </div>
           </div>
         </div>
       </ScrollSection>
 
-      <ScrollSection progress={scrollYProgress} start={0.25} end={0.5} title="OUR SERVICES">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl w-full mx-auto">
-            <div className="backdrop-blur-md bg-white/50 p-6 rounded-2xl border border-white/60 shadow-xl flex flex-col items-center text-center">
-                <div className="text-3xl mb-4">🌐</div>
-                <h3 className="text-[#1a1a1a] font-wide font-bold text-base mb-3">STATIC WEBSITES</h3>
-                <p className="text-gray-800 font-sans text-xs leading-relaxed">
-                    Beautiful, blazing-fast landing pages with flawless SEO. Engineered to establish ironclad brand authority, load instantly globally, and maximize user conversion from the first click.
-                </p>
-            </div>
-            <div className="backdrop-blur-md bg-white/50 p-6 rounded-2xl border border-white/60 shadow-xl flex flex-col items-center text-center border-t-4 border-t-[#2d52a3]">
-                <div className="text-3xl mb-4">⚡</div>
-                <h3 className="text-[#1a1a1a] font-wide font-bold text-base mb-3">WEB APPS</h3>
-                <p className="text-gray-800 font-sans text-xs leading-relaxed">
-                    Powerful platforms boasting custom admin dashboards, layered security, third-party API integration, real-time sync, and robust architectures designed to handle millions of queries.
-                </p>
-            </div>
-            <div className="backdrop-blur-md bg-white/50 p-6 rounded-2xl border border-white/60 shadow-xl flex flex-col items-center text-center">
-                <div className="text-3xl mb-4">🤖</div>
-                <h3 className="text-[#1a1a1a] font-wide font-bold text-base mb-3">AI SOLUTIONS</h3>
-                <p className="text-gray-800 font-sans text-xs leading-relaxed">
-                    Seamless integration of Large Language Models, contextual predictive engines, autonomous chatbots, high-volume data pipelines, and robust RAG algorithms.
-                </p>
-            </div>
+      <ScrollSection progress={scrollYProgress} start={0.35} end={0.60} title="OUR SERVICES">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 w-full mx-auto">
+            {[
+              { icon: '🌐', title: 'Web Development', desc: 'Modern, responsive websites built with cutting-edge tech.' },
+              { icon: '📱', title: 'Mobile Apps', desc: 'Native and cross-platform applications for iOS and Android.' },
+              { icon: '🤖', title: 'AI Integration', desc: 'Leverage AI to enhance user experiences and automate workflows.' },
+              { icon: '☁️', title: 'Cloud Solutions', desc: 'Scalable cloud infrastructure and robust deployment.' },
+              { icon: '🔧', title: 'Custom Dev', desc: 'Tailored software solutions designed for specific business needs.' },
+              { icon: '📊', title: 'Data Analytics', desc: 'Transform your data into actionable insights.' }
+            ].map((s, i) => (
+               <div key={i} className="backdrop-blur-xl bg-slate-900/60 p-4 md:p-6 rounded-2xl border border-white/10 shadow-xl flex flex-col items-center text-center hover:border-purple-500/50 transition-colors">
+                   <div className="text-2xl md:text-3xl mb-2 md:mb-4">{s.icon}</div>
+                   <h3 className="text-purple-400 font-wide font-bold text-[10px] md:text-xs mb-2 uppercase">{s.title}</h3>
+                   <p className="text-slate-300 font-sans text-[9px] md:text-[11px] leading-relaxed">
+                       {s.desc}
+                   </p>
+               </div>
+            ))}
         </div>
       </ScrollSection>
 
-      <ScrollSection progress={scrollYProgress} start={0.5} end={0.75} title="OUR APPROACH">
-         <div className="backdrop-blur-md bg-white/50 p-8 md:p-12 rounded-3xl border border-white/60 shadow-2xl mx-auto max-w-4xl space-y-6 text-left">
-             <div className="flex gap-4 items-start">
-                 <span className="text-2xl font-wide font-bold text-[#2d52a3] leading-none">1</span>
+      <ScrollSection progress={scrollYProgress} start={0.60} end={0.82} title="OUR APPROACH">
+         <div className="backdrop-blur-xl bg-slate-900/60 p-6 md:p-10 rounded-3xl border border-white/10 shadow-2xl mx-auto max-w-3xl space-y-4 md:space-y-6 text-left">
+             <div className="flex gap-3 md:gap-4 items-start">
+                 <span className="text-xl md:text-2xl font-wide font-bold text-amber-400 leading-none">1</span>
                  <div>
-                    <h4 className="text-base font-wide font-bold text-[#1a1a1a] mb-1">DISCOVERY & TARGETING</h4>
-                    <p className="text-gray-800 font-sans text-[13px] md:text-sm">We aggressively analyze market dynamics and business metrics to map the optimal technical path before any engineering begins.</p>
+                    <h4 className="text-sm md:text-base font-wide font-bold text-white mb-1">DISCOVERY & TARGETING</h4>
+                    <p className="text-slate-300 font-sans text-xs md:text-sm">We aggressively analyze market dynamics and business metrics to map the optimal technical path before any engineering begins.</p>
                  </div>
              </div>
-             <div className="flex gap-4 items-start">
-                 <span className="text-2xl font-wide font-bold text-[#2d52a3] leading-none">2</span>
+             <div className="flex gap-3 md:gap-4 items-start">
+                 <span className="text-xl md:text-2xl font-wide font-bold text-amber-400 leading-none">2</span>
                  <div>
-                    <h4 className="text-base font-wide font-bold text-[#1a1a1a] mb-1">PROTOTYPING & UX</h4>
-                    <p className="text-gray-800 font-sans text-[13px] md:text-sm">We construct intelligent wireframes and model intricate user journeys to guarantee maximum retention and engagement density.</p>
+                    <h4 className="text-sm md:text-base font-wide font-bold text-white mb-1">PROTOTYPING & UX</h4>
+                    <p className="text-slate-300 font-sans text-xs md:text-sm">We construct intelligent wireframes and model intricate user journeys to guarantee maximum retention and engagement density.</p>
                  </div>
              </div>
-             <div className="flex gap-4 items-start">
-                 <span className="text-2xl font-wide font-bold text-[#2d52a3] leading-none">3</span>
+             <div className="flex gap-3 md:gap-4 items-start">
+                 <span className="text-xl md:text-2xl font-wide font-bold text-amber-400 leading-none">3</span>
                  <div>
-                    <h4 className="text-base font-wide font-bold text-[#1a1a1a] mb-1">A.I. & CLOUD ENG</h4>
-                    <p className="text-gray-800 font-sans text-[13px] md:text-sm">We deploy pure, reliable software into auto-scaling cloud environments, fortified by adaptable artificial intelligence modules.</p>
+                    <h4 className="text-sm md:text-base font-wide font-bold text-white mb-1">A.I. & CLOUD ENG</h4>
+                    <p className="text-slate-300 font-sans text-xs md:text-sm">We deploy pure, reliable software into auto-scaling cloud environments, fortified by adaptable artificial intelligence modules.</p>
                  </div>
              </div>
-        </div>
+         </div>
       </ScrollSection>
 
-      <ScrollSection progress={scrollYProgress} start={0.75} end={1.0} title="COMMENCE BUILD">
-        <div className="backdrop-blur-md bg-white/50 p-10 md:p-14 rounded-3xl border border-white/60 shadow-2xl flex flex-col items-center mx-auto max-w-4xl">
-          <p className="text-[#1a1a1a] text-xl md:text-2xl font-wide font-bold leading-relaxed mb-6 text-center uppercase tracking-tighter">
-             The horizon belongs to <br/><span className="text-[#2d52a3] drop-shadow-md">those who invent it.</span>
+      <ScrollSection progress={scrollYProgress} start={0.82} end={1.0} title="COMMENCE BUILD">
+        <div className="backdrop-blur-xl bg-slate-900/60 p-8 md:p-14 rounded-3xl border border-white/10 shadow-2xl flex flex-col items-center mx-auto max-w-2xl">
+          <p className="text-white text-lg md:text-2xl font-wide font-bold leading-relaxed mb-4 text-center uppercase tracking-tighter">
+             The horizon belongs to <br/><span className="text-blue-400 drop-shadow-md">those who invent it.</span>
           </p>
-          <p className="text-[#444] text-sm md:text-base font-sans text-center max-w-xl">
-             Explore our <span className="font-bold text-[#1a1a1a] border-b border-black">Pricing</span> to view tiers, or jump to <span className="font-bold text-[#1a1a1a] border-b border-black">Contact</span> to start.
+          <p className="text-slate-300 text-xs md:text-sm font-sans text-center max-w-sm">
+             Explore our <span className="font-bold text-white">Pricing</span> to view tiers, or jump to <span className="font-bold text-white">Contact</span> to start.
           </p>
         </div>
       </ScrollSection>
     </>
   );
 }
+
